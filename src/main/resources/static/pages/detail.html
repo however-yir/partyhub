@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Element UI Example</title>
+    <!-- 引入 Vue.js -->
+    <script src="../vue.js"></script>
+    <!-- 引入 Element UI CSS -->
+    <link rel="stylesheet" href="../element.css">
+    <!-- 引入 Element UI JS -->
+    <script src="../element.js"></script>
+    <!-- 引入 axios -->
+    <script src="../axios.min.js"></script>
+    <style>
+        .el-descriptions-item{
+            font-size: larger;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-steps :active="detailData.process" align-center style="margin-top: 2%">
+        <el-step title="支部自评"></el-step>
+        <el-step title="评分专家评分"></el-step>
+        <el-step title="管理员审核"></el-step>
+        <el-step title="评分完成"></el-step>
+    </el-steps>
+
+    <el-descriptions title="党支部信息" align-center style="margin-top: 2%" border :content-style="{width:'23%'}">
+        <el-descriptions-item label="党支部名称">{{detailData.partybranchname}}</el-descriptions-item>
+        <el-descriptions-item label="成立时间">{{ detailData.establishtime }}</el-descriptions-item>
+        <el-descriptions-item label="所属学院">{{ detailData.deptName }}</el-descriptions-item>
+    </el-descriptions>
+
+
+    <el-descriptions title="评分情况" align-center style="margin-top: 2%" border :content-style="{width:'10%'}">
+        <el-descriptions-item label="基础项得分">{{detailData.foundationitem}}</el-descriptions-item>
+        <el-descriptions-item label="加分项得分">{{ detailData.pluses }}</el-descriptions-item>
+        <el-descriptions-item label="减分项得分">{{ detailData.minuses }}</el-descriptions-item>
+        <el-descriptions-item label="评议项得分">{{ detailData.commentitems }}</el-descriptions-item>
+        <el-descriptions-item label="总分">{{ detailData.score }}</el-descriptions-item>
+    </el-descriptions>
+
+    <el-descriptions title="审核意见展示" :column="1" align-center style="margin-top: 2%" border :content-style="{width:'90%'}">
+        <el-descriptions-item label="初评结果">{{detailData.outcome}}</el-descriptions-item>
+        <el-descriptions-item label="学校党委组织部意见">{{ detailData.organizationcomment }}</el-descriptions-item>
+        <el-descriptions-item label="学校党委意见">{{ detailData.comments }}</el-descriptions-item>
+    </el-descriptions>
+
+    <el-descriptions title="支撑材料展示" align-center style="margin-top: 2%" border :content-style="{width:'40%'}">
+        <el-descriptions-item label="支撑材料名称">{{detailData.fileName}}</el-descriptions-item>
+        <el-descriptions-item label="支撑材料路径">{{ detailData.filePath }}</el-descriptions-item>
+    </el-descriptions>
+</div>
+
+<script>
+    // 获取 URL 中的参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    new Vue({
+        mounted() {
+            this.fetchData();
+        },
+        el: '#app',
+        data() {
+            return {
+                detailData: {
+                },
+                processStep: 0
+            }
+        },
+        methods: {
+            fetchData() {
+                axios.get(`/star/${id}`)
+                    .then((response) => {
+                        this.detailData = response.data;
+                        console.log(this.detailData);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+        }
+    });
+</script>
+</body>
+</html>
