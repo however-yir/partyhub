@@ -1,14 +1,7 @@
 package org.example.djxt.domain;
 
-
-import com.sun.tracing.ProbeName;
-import org.springframework.stereotype.Repository;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Date;
 
 @Table(name = "sys_branch_star")
 public class sysBranchStar {
