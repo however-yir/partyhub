@@ -1,17 +1,13 @@
 package org.example.djxt.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.example.djxt.domain.sysBranchStar;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Repository;
-import tk.mybatis.mapper.common.BaseMapper;
-import tk.mybatis.spring.annotation.MapperScan;
+import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
 
-@Repository
-public interface SysBranchStarMapper extends BaseMapper<sysBranchStar> {
+@org.apache.ibatis.annotations.Mapper
+public interface SysBranchStarMapper extends Mapper<sysBranchStar> {
 
     String BASE_COLUMNS = "id,sodsacs,partybranchname,establishtime,partynumber,dept_id,dept_name," +
             "branchuser_id,branchuser_name,branch_secretary_id,branch_secretary_name,self_star,context," +
