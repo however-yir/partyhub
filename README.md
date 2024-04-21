@@ -1,167 +1,114 @@
 # partyhub
 
-🔥 A Spring Boot party-building management project based on MyBatis, MySQL, and integrated static frontend assets.  
-🚀 Built for branch star-rating data, backend APIs, and structured business database resources.  
-⭐ Provides a practical foundation for organization management, data modeling, and template-based admin pages.
+`partyhub` 是一个党建管理系统后端项目，基于 Spring Boot + MyBatis + MySQL，当前形态为：
 
-> 党建评星主题的数据与应用示例仓库，包含 Spring Boot 后端接口、静态前端资源以及完整业务数据库脚本（`djxt.sql`）。
+- 可运行后端服务（统一响应、异常处理、分页）
+- 多业务模块 API（支部、用户、通知、反馈、岗位、评星）
+- 静态前端资源托管（`src/main/resources/static`）
+- 完整业务数据库脚本（`djxt.sql`）
 
-## 1. 项目定位
+## 技术栈
 
-`partyhub` 当前仓库是“后端 API + 静态资源 + 数据模型”混合形态：
+- Java 8
+- Spring Boot 2.4.2
+- MyBatis + tk-mapper
+- MySQL 8.x
 
-- 后端：Spring Boot（可运行）
-- 前端：`src/main/resources/static` 内置静态页面与资源（非独立前端工程）
-- 数据库：`djxt.sql` 提供较完整的业务表结构与样例数据
-
-## 2. 当前代码已实现内容
-
-- 后端应用启动与 MyBatis Mapper 扫描
-- `sys_branch_star` 数据查询接口（列表与详情）
-  - `GET /star`
-  - `GET /star/{id}`
-- 静态资源托管（大量 CSS/JS/图片模板资源）
-
-说明：数据库脚本覆盖的业务范围远大于当前后端接口实现，仓库属于“数据与模板较完整、业务代码仍可继续补齐”的状态。
-
-## 3. 技术栈
-
-- 后端：Spring Boot 2.4.2、MyBatis
-- 数据库：MySQL 8.x
-- 前端资源：Vue2、ElementUI、Axios（静态集成）
-- Java 版本：1.8
-
-## 4. 项目结构
+## 项目结构
 
 ```text
 partyhub
-├── src/main/java/org/example/djxt/
-│   ├── demos/web/StarController.java
-│   ├── mapper/
-│   ├── service/
-│   └── domain/
-├── src/main/resources/
-│   ├── application.yml
-│   └── static/                     # 页面与前端资源
-├── djxt.sql                        # 业务数据库脚本
-├── pom.xml
-└── package.json
+├── src/main/java/org/example/djxt
+│   ├── common                 # 统一响应、分页、异常
+│   ├── controller             # 新增业务控制器
+│   ├── demos/web              # 兼容旧接口与示例控制器
+│   ├── domain                 # 业务实体
+│   ├── mapper                 # MyBatis Mapper
+│   └── service                # 服务层
+├── src/main/resources/static  # 静态页面与资源
+├── docs/api-coverage.md       # API 覆盖清单
+├── evaluation/                # 差距分析与评估记录
+├── scripts/evaluation/        # 冒烟测试脚本
+├── project-management/        # 迭代活动记录
+└── djxt.sql                   # 数据库初始化脚本
 ```
 
-## 5. 本地运行
+## 已覆盖 API
 
-### 5.1 环境
+详情见：[docs/api-coverage.md](docs/api-coverage.md)
+
+核心接口前缀：
+
+- `/api/branches`
+- `/api/users`
+- `/api/messages`
+- `/api/feedbacks`
+- `/api/posts`
+- `/api/stars`
+- `/api/stars/stats/*`（评星定级统计分析）
+
+兼容旧接口：
+
+- `GET /star`
+- `GET /star/{id}`
+
+评星定级重点能力：
+
+- 党支部评星数据填报与草稿更新
+- 填报提交流程（支部自评 -> 专家评分）
+- 审核打分与总分自动汇总（基础分 + 加分 - 减分 + 评议项）
+- 自动星级判定（五星/四星/三星/二星/一星）
+- 统计分析（年度总览、星级分布、流程分布、学院排行、多年趋势）
+
+## 本地运行
+
+### 1. 准备环境
 
 - JDK 8
 - Maven 3.6+
 - MySQL 8.x
 
-### 5.2 初始化数据库
-
-1. 复制环境模板并设置本地口令（不要保留 `change_me_*` 占位值）：
+### 2. 配置环境变量
 
 ```bash
 cp .env.example .env
-```
-
-2. 启动本地 MySQL（可选，但推荐）：
-
-```bash
-docker compose --env-file .env -f docker-compose.dev.yml up -d
-```
-
-3. 创建数据库并导入 [djxt.sql](djxt.sql)
-
-### 5.3 启动后端
-
-```bash
 set -a && source .env && set +a
+```
+
+### 3. 初始化数据库
+
+```bash
+mysql -u root -p -e "create database if not exists djxt default charset utf8mb4"
+mysql -u root -p djxt < djxt.sql
+```
+
+### 4. 启动服务
+
+```bash
 mvn spring-boot:run
 ```
 
-默认地址：`http://localhost:8080`
+默认访问：`http://localhost:8080`
 
-### 5.4 前端边界说明
+### 5. 冒烟检查
 
-- 本仓库前端资源已内置在 `src/main/resources/static`，启动后端即可直接访问页面资源。
-- 当前不提供独立前端构建链路（`npm` 仅用于依赖清单管理，不是运行前置）。
+```bash
+bash scripts/evaluation/api_smoke_check.sh http://localhost:8080
+```
 
-## 6. 示例数据
+## 测试
 
-`djxt.sql` 中包含示例管理员数据（`sys_user`）：
+```bash
+mvn test
+```
 
-- `admin / 123456`
+当前已包含基于 `MockMvc` 的控制器测试样例，可直接在无真实数据库环境下执行。
 
-仅用于本地演示，导入后请立即修改示例账号口令。
+## 迭代记录
 
-## 7. 当前注意事项
+- 后端完善差距分析：`evaluation/backend-gap-analysis.md`
+- 活动日志：`project-management/2025H1_ACTIVITY_LOG.md`
 
-- 根目录包含 `node_modules`，实际开发建议忽略并通过 `npm install` 生成
-- `pom.xml` 中 `spring-boot-maven-plugin` 配置了 `<skip>true</skip>`，如需打包请按发布流程评估调整
-- 若要实现完整党建评星业务，需要继续补全控制器、服务和权限链路
+## License
 
-## 8. 后续扩展建议
-
-- 按 `djxt.sql` 的业务表逐步补齐 CRUD/API
-- 增加登录鉴权、角色权限与操作审计
-- 统一前后端工程结构（拆分独立前端项目）
-
-## 9. 设计与实现思路
-
-`partyhub` 的实现思路偏向“先数据、再接口、后扩展”：
-
-1. 先通过 `djxt.sql` 梳理党支部、评星批次、星级结果等业务对象及其关系；
-2. 再补后端启动骨架、Mapper 扫描和基础查询接口，让关键数据可以直接访问；
-3. 同时保留静态前端页面与资源，作为后续逐步接入完整业务流程的承载层；
-4. 最后再考虑登录鉴权、角色权限和完整 CRUD 的补齐。
-
-这种方式更适合业务模型相对复杂、但系统还处于逐步建设阶段的项目形态。
-
-## 10. 关键难点与优化方向
-
-### 10.1 关键难点
-
-该项目的难点主要集中在业务建模和实现边界上：
-
-- 党建评星定级类系统表结构较多，且存在批次、年度、党支部、评星结果等多层关系；
-- 当前仓库的数据资源比后端实现更完整，容易出现“模型较完整、接口逐步补齐”的状态；
-- 需要在“优先跑通核心查询”和“后续能扩展成完整业务系统”之间做好平衡。
-
-### 10.2 当前处理方式
-
-当前版本主要采用以下方式推进：
-
-- 将数据库脚本作为业务建模依据，明确核心实体和主线关系；
-- 后端优先实现高价值查询接口，例如评星列表和详情，先打通关键数据链路；
-- 静态前端资源以内置页面形式保留，确保仓库已经具备页面结构和后续扩展基础。
-
-### 10.3 后续优化方向
-
-如果继续完善，可以优先推进：
-
-- 登录鉴权、角色权限和操作审计；
-- 评星定级相关的完整录入、审核、统计和导出流程；
-- 前后端彻底拆分，统一工程结构；
-- 数据迁移脚本和初始化说明，提升部署与演示效率。
-
-## 12.1 贡献建议
-
-欢迎通过 Issue / PR 提交：
-
-- 后端业务接口补齐
-- 前端页面模块化改造
-- 数据库迁移与初始化脚本优化
-- 运行文档与部署说明完善
-
-## 12.2 许可说明
-
-本仓库采用 MIT License，详见 [LICENSE](LICENSE)。
-
-## 简历改造清单
-
-- 追踪文件：[docs/resume-upgrade-checklist.md](docs/resume-upgrade-checklist.md)
-- 环境模板：[.env.example](.env.example)
-- 开发 compose：[docker-compose.dev.yml](docker-compose.dev.yml)
-- CI 配置：[.github/workflows/ci.yml](.github/workflows/ci.yml)
-
-本轮已落地：工程化基线（环境模板、compose、CI）+ 全局异常处理骨架。
+MIT
