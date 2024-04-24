@@ -1,12 +1,12 @@
 package org.example.djxt.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.example.djxt.common.BusinessException;
 import org.example.djxt.common.PageResult;
 import org.example.djxt.domain.SysUser;
 import org.example.djxt.mapper.SysUserMapper;
 import org.example.djxt.service.SysUserService;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,29 +22,28 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public PageResult<SysUser> list(String keyword, Integer branchId, String status, int page, int size) {
-        Example example = new Example(SysUser.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("delFlag", "0");
+        QueryWrapper<SysUser> query = new QueryWrapper<>();
+        query.eq("del_flag", "0");
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            String q = "%" + keyword.trim() + "%";
-            criteria.andCondition("(user_name like '" + q + "' or nick_name like '" + q + "')");
+            String q = keyword.trim();
+            query.and(wrapper -> wrapper.like("user_name", q).or().like("nick_name", q));
         }
         if (branchId != null) {
-            criteria.andEqualTo("branchId", branchId);
+            query.eq("branch_id", branchId);
         }
         if (status != null && !status.trim().isEmpty()) {
-            criteria.andEqualTo("status", status);
+            query.eq("status", status);
         }
 
-        example.orderBy("userId").desc();
-        List<SysUser> list = userMapper.selectByExample(example);
+        query.orderByDesc("user_id");
+        List<SysUser> list = userMapper.selectList(query);
         return PageResult.fromList(list, page, size);
     }
 
     @Override
     public SysUser getById(Long id) {
-        SysUser user = userMapper.selectByPrimaryKey(id);
+        SysUser user = userMapper.selectById(id);
         if (user == null || "2".equals(user.getDelFlag())) {
             throw new BusinessException("用户不存在: " + id);
         }
@@ -73,7 +72,7 @@ public class SysUserServiceImpl implements SysUserService {
 
         user.setCreateTime(LocalDateTime.now());
         user.setUpdateTime(LocalDateTime.now());
-        userMapper.insertSelective(user);
+        userMapper.insert(user);
         return user;
     }
 
@@ -86,7 +85,7 @@ public class SysUserServiceImpl implements SysUserService {
 
         user.setUserId(id);
         user.setUpdateTime(LocalDateTime.now());
-        userMapper.updateByPrimaryKeySelective(user);
+        userMapper.updateById(user);
         return getById(id);
     }
 
@@ -99,7 +98,7 @@ public class SysUserServiceImpl implements SysUserService {
         deleted.setStatus("1");
         deleted.setUpdateTime(LocalDateTime.now());
         deleted.setRemark("逻辑删除于 " + LocalDateTime.now());
-        userMapper.updateByPrimaryKeySelective(deleted);
+        userMapper.updateById(deleted);
 
         if ("0".equals(existing.getDelFlag())) {
             return;
@@ -108,15 +107,14 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     private void checkUsernameDuplicate(String username, Long excludeId) {
-        Example example = new Example(SysUser.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("userName", username);
-        criteria.andEqualTo("delFlag", "0");
+        QueryWrapper<SysUser> query = new QueryWrapper<>();
+        query.eq("user_name", username);
+        query.eq("del_flag", "0");
         if (excludeId != null) {
-            criteria.andNotEqualTo("userId", excludeId);
+            query.ne("user_id", excludeId);
         }
 
-        int count = userMapper.selectCountByExample(example);
+        Long count = userMapper.selectCount(query);
         if (count > 0) {
             throw new BusinessException("用户账号已存在: " + username);
         }

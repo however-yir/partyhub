@@ -1,8 +1,9 @@
 package org.example.djxt.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.example.djxt.domain.SysBranch;
-import tk.mybatis.mapper.common.Mapper;
 
-@org.apache.ibatis.annotations.Mapper
-public interface SysBranchMapper extends Mapper<SysBranch> {
+@Mapper
+public interface SysBranchMapper extends BaseMapper<SysBranch> {
 }

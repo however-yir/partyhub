@@ -1,34 +1,32 @@
 package org.example.djxt.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-@Table(name = "sys_feedback")
+@TableName("sys_feedback")
 public class SysFeedback {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
     private Integer messageid;
     private String content;
 
-    @Column(name = "create_by")
+    @TableField("create_by")
     private String createBy;
 
-    @Column(name = "create_time")
+    @TableField("create_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    @Column(name = "update_by")
+    @TableField("update_by")
     private String updateBy;
 
-    @Column(name = "update_time")
+    @TableField("update_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 

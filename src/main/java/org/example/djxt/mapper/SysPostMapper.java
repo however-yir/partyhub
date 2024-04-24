@@ -1,8 +1,9 @@
 package org.example.djxt.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.example.djxt.domain.SysPost;
-import tk.mybatis.mapper.common.Mapper;
 
-@org.apache.ibatis.annotations.Mapper
-public interface SysPostMapper extends Mapper<SysPost> {
+@Mapper
+public interface SysPostMapper extends BaseMapper<SysPost> {
 }

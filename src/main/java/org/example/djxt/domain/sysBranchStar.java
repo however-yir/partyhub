@@ -1,10 +1,13 @@
 package org.example.djxt.domain;
 
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
-@Table(name = "sys_branch_star")
+@TableName("sys_branch_star")
 public class sysBranchStar {
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     private String sodsacs;
@@ -36,8 +39,9 @@ public class sysBranchStar {
     private String organizationcomment;
     private String comments;
     private Integer process;
-    @Transient
+    @TableField(exist = false)
     private String processName;
+    @TableField("sb_year")
     private String sbYear;
     private String file_name;
     private String file_path;

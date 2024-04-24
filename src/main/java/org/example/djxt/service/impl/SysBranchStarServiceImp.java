@@ -1,5 +1,6 @@
 package org.example.djxt.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.example.djxt.common.BusinessException;
 import org.example.djxt.common.PageResult;
 import org.example.djxt.domain.sysBranchStar;
@@ -9,8 +10,10 @@ import org.example.djxt.dto.StarStatsOverview;
 import org.example.djxt.dto.StarYearTrend;
 import org.example.djxt.mapper.SysBranchStarMapper;
 import org.example.djxt.service.ISysBranchStarService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -37,7 +40,10 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
 
     @Override
     public List<sysBranchStar> listAll() {
-        List<sysBranchStar> stars = starMapper.selectAll();
+        QueryWrapper<sysBranchStar> query = new QueryWrapper<>();
+        query.ne("del_flag", "2");
+        query.orderByDesc("id");
+        List<sysBranchStar> stars = starMapper.selectList(query);
         return stars.stream()
                 .filter(this::isNotDeleted)
                 .peek(this::enrichProcessName)
@@ -46,21 +52,21 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
 
     @Override
     public PageResult<sysBranchStar> list(String year, Integer process, String keyword, int page, int size) {
-        Example example = new Example(sysBranchStar.class);
-        Example.Criteria criteria = example.createCriteria();
+        QueryWrapper<sysBranchStar> query = new QueryWrapper<>();
 
         if (year != null && !year.trim().isEmpty()) {
-            criteria.andEqualTo("sbYear", year);
+            query.eq("sb_year", year);
         }
         if (process != null) {
-            criteria.andEqualTo("process", process);
+            query.eq("process", process);
         }
         if (keyword != null && !keyword.trim().isEmpty()) {
-            criteria.andLike("partybranchname", "%" + keyword.trim() + "%");
+            query.like("partybranchname", keyword.trim());
         }
+        query.ne("del_flag", "2");
 
-        example.orderBy("id").desc();
-        List<sysBranchStar> stars = starMapper.selectByExample(example);
+        query.orderByDesc("id");
+        List<sysBranchStar> stars = starMapper.selectList(query);
         List<sysBranchStar> filtered = stars.stream()
                 .filter(this::isNotDeleted)
                 .peek(this::enrichProcessName)
@@ -79,6 +85,13 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "starStatsOverview", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByRating", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByProcess", allEntries = true),
+            @CacheEvict(cacheNames = "starDeptRanking", allEntries = true),
+            @CacheEvict(cacheNames = "starTrend", allEntries = true)
+    })
     public sysBranchStar create(sysBranchStar star) {
         if (star == null || isBlank(star.getPartybranchname()) || isBlank(star.getSodsacs())) {
             throw new BusinessException("评星记录缺少必填字段: partybranchname/sodsacs");
@@ -96,22 +109,36 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
         normalizeScoreAndRating(star, null);
         star.setCreateTime(nowString());
         star.setUpdateTime(nowString());
-        starMapper.insertSelective(star);
+        starMapper.insert(star);
         enrichProcessName(star);
         return star;
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "starStatsOverview", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByRating", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByProcess", allEntries = true),
+            @CacheEvict(cacheNames = "starDeptRanking", allEntries = true),
+            @CacheEvict(cacheNames = "starTrend", allEntries = true)
+    })
     public sysBranchStar update(Long id, sysBranchStar star) {
         sysBranchStar existing = getById(id);
         star.setId(id);
         normalizeScoreAndRating(star, existing);
         star.setUpdateTime(nowString());
-        starMapper.updateByPrimaryKeySelective(star);
+        starMapper.updateById(star);
         return getById(id);
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "starStatsOverview", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByRating", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByProcess", allEntries = true),
+            @CacheEvict(cacheNames = "starDeptRanking", allEntries = true),
+            @CacheEvict(cacheNames = "starTrend", allEntries = true)
+    })
     public sysBranchStar submit(Long id, String submitter) {
         sysBranchStar existing = getById(id);
         sysBranchStar update = new sysBranchStar();
@@ -121,11 +148,18 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
             update.setUpdateBy(submitter);
         }
         update.setUpdateTime(nowString());
-        starMapper.updateByPrimaryKeySelective(update);
+        starMapper.updateById(update);
         return getById(id);
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "starStatsOverview", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByRating", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByProcess", allEntries = true),
+            @CacheEvict(cacheNames = "starDeptRanking", allEntries = true),
+            @CacheEvict(cacheNames = "starTrend", allEntries = true)
+    })
     public sysBranchStar review(Long id, sysBranchStar reviewPayload) {
         sysBranchStar existing = getById(id);
         if (reviewPayload == null) {
@@ -141,11 +175,12 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
         }
         reviewPayload.setProcess(Math.min(Math.max(targetProcess, 3), 4));
         reviewPayload.setUpdateTime(nowString());
-        starMapper.updateByPrimaryKeySelective(reviewPayload);
+        starMapper.updateById(reviewPayload);
         return getById(id);
     }
 
     @Override
+    @Cacheable(cacheNames = "starStatsOverview", key = "#year != null && !#year.trim().isEmpty() ? #year.trim() : 'ALL'")
     public StarStatsOverview statsOverview(String year) {
         List<sysBranchStar> stars = fetchByYear(year);
         StarStatsOverview overview = new StarStatsOverview();
@@ -173,6 +208,7 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
     }
 
     @Override
+    @Cacheable(cacheNames = "starStatsByRating", key = "#year != null && !#year.trim().isEmpty() ? #year.trim() : 'ALL'")
     public List<StarBucketCount> statsByRating(String year) {
         List<sysBranchStar> stars = fetchByYear(year);
         Map<String, Long> grouped = stars.stream()
@@ -185,6 +221,7 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
     }
 
     @Override
+    @Cacheable(cacheNames = "starStatsByProcess", key = "#year != null && !#year.trim().isEmpty() ? #year.trim() : 'ALL'")
     public List<StarBucketCount> statsByProcess(String year) {
         List<sysBranchStar> stars = fetchByYear(year);
         Map<Integer, Long> grouped = stars.stream()
@@ -197,6 +234,7 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
     }
 
     @Override
+    @Cacheable(cacheNames = "starDeptRanking", key = "(#year != null && !#year.trim().isEmpty() ? #year.trim() : 'ALL') + ':' + #limit")
     public List<StarDeptRank> deptRanking(String year, int limit) {
         List<sysBranchStar> stars = fetchByYear(year);
         Map<String, List<sysBranchStar>> grouped = stars.stream()
@@ -236,6 +274,7 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
     }
 
     @Override
+    @Cacheable(cacheNames = "starTrend", key = "'ALL'")
     public List<StarYearTrend> trend() {
         List<sysBranchStar> stars = listAll();
         Map<String, List<sysBranchStar>> grouped = stars.stream()
@@ -260,9 +299,16 @@ public class SysBranchStarServiceImp implements ISysBranchStarService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "starStatsOverview", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByRating", allEntries = true),
+            @CacheEvict(cacheNames = "starStatsByProcess", allEntries = true),
+            @CacheEvict(cacheNames = "starDeptRanking", allEntries = true),
+            @CacheEvict(cacheNames = "starTrend", allEntries = true)
+    })
     public void delete(Long id) {
         getById(id);
-        starMapper.deleteByPrimaryKey(id);
+        starMapper.deleteById(id);
     }
 
     private List<sysBranchStar> fetchByYear(String year) {

@@ -1,12 +1,12 @@
 package org.example.djxt.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.example.djxt.common.BusinessException;
 import org.example.djxt.common.PageResult;
 import org.example.djxt.domain.SysPost;
 import org.example.djxt.mapper.SysPostMapper;
 import org.example.djxt.service.SysPostService;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,24 +22,23 @@ public class SysPostServiceImpl implements SysPostService {
 
     @Override
     public PageResult<SysPost> list(String keyword, String status, int page, int size) {
-        Example example = new Example(SysPost.class);
-        Example.Criteria criteria = example.createCriteria();
+        QueryWrapper<SysPost> query = new QueryWrapper<>();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            criteria.andLike("postName", "%" + keyword.trim() + "%");
+            query.like("post_name", keyword.trim());
         }
         if (status != null && !status.trim().isEmpty()) {
-            criteria.andEqualTo("status", status);
+            query.eq("status", status);
         }
 
-        example.orderBy("postSort").asc();
-        List<SysPost> list = postMapper.selectByExample(example);
+        query.orderByAsc("post_sort");
+        List<SysPost> list = postMapper.selectList(query);
         return PageResult.fromList(list, page, size);
     }
 
     @Override
     public SysPost getById(Long id) {
-        SysPost post = postMapper.selectByPrimaryKey(id);
+        SysPost post = postMapper.selectById(id);
         if (post == null) {
             throw new BusinessException("岗位不存在: " + id);
         }
@@ -60,7 +59,7 @@ public class SysPostServiceImpl implements SysPostService {
 
         post.setCreateTime(LocalDateTime.now());
         post.setUpdateTime(LocalDateTime.now());
-        postMapper.insertSelective(post);
+        postMapper.insert(post);
         return post;
     }
 
@@ -69,14 +68,14 @@ public class SysPostServiceImpl implements SysPostService {
         getById(id);
         post.setPostId(id);
         post.setUpdateTime(LocalDateTime.now());
-        postMapper.updateByPrimaryKeySelective(post);
+        postMapper.updateById(post);
         return getById(id);
     }
 
     @Override
     public void delete(Long id) {
         getById(id);
-        postMapper.deleteByPrimaryKey(id);
+        postMapper.deleteById(id);
     }
 
     private boolean isBlank(String value) {

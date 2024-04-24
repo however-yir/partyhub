@@ -1,34 +1,31 @@
 package org.example.djxt.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Table(name = "sys_user")
+@TableName("sys_user")
 public class SysUser {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @TableId(value = "user_id", type = IdType.AUTO)
     private Long userId;
 
-    @Column(name = "dept_id")
+    @TableField("dept_id")
     private Long deptId;
 
-    @Column(name = "user_name")
+    @TableField("user_name")
     private String userName;
 
-    @Column(name = "nick_name")
+    @TableField("nick_name")
     private String nickName;
 
-    @Column(name = "user_type")
+    @TableField("user_type")
     private String userType;
     private String email;
     private String phonenumber;
@@ -44,40 +41,40 @@ public class SysUser {
     @JsonIgnore
     private String password;
 
-    @Column(name = "branch_id")
+    @TableField("branch_id")
     private Integer branchId;
 
-    @Column(name = "branch_name")
+    @TableField("branch_name")
     private String branchName;
 
-    @Column(name = "post_id")
+    @TableField("post_id")
     private String postId;
 
-    @Column(name = "post_name")
+    @TableField("post_name")
     private String postName;
 
     private String status;
 
-    @Column(name = "del_flag")
+    @TableField("del_flag")
     private String delFlag;
 
-    @Column(name = "create_by")
+    @TableField("create_by")
     private String createBy;
 
-    @Column(name = "create_time")
+    @TableField("create_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    @Column(name = "update_by")
+    @TableField("update_by")
     private String updateBy;
 
-    @Column(name = "update_time")
+    @TableField("update_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     private String remark;
 
-    @Column(name = "branch_star_id")
+    @TableField("branch_star_id")
     private Integer branchStarId;
 
     public Long getUserId() {

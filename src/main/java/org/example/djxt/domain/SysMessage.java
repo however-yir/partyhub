@@ -1,68 +1,65 @@
 package org.example.djxt.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Table(name = "sys_message")
+@TableName("sys_message")
 public class SysMessage {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "message_id")
+    @TableId(value = "message_id", type = IdType.AUTO)
     private Integer messageId;
 
-    @Column(name = "message_title")
+    @TableField("message_title")
     private String messageTitle;
 
-    @Column(name = "message_flag")
+    @TableField("message_flag")
     private String messageFlag;
 
-    @Column(name = "message_content")
+    @TableField("message_content")
     private String messageContent;
 
-    @Column(name = "start_date")
+    @TableField("start_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
-    @Column(name = "end_date")
+    @TableField("end_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     private String status;
 
-    @Column(name = "receive_user_id")
+    @TableField("receive_user_id")
     private Integer receiveUserId;
 
-    @Column(name = "receive_user_name")
+    @TableField("receive_user_name")
     private String receiveUserName;
 
-    @Column(name = "message_file_name")
+    @TableField("message_file_name")
     private String messageFileName;
 
-    @Column(name = "message_file_path")
+    @TableField("message_file_path")
     private String messageFilePath;
 
-    @Column(name = "message_level")
+    @TableField("message_level")
     private String messageLevel;
 
-    @Column(name = "create_by")
+    @TableField("create_by")
     private String createBy;
 
-    @Column(name = "create_time")
+    @TableField("create_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-    @Column(name = "update_by")
+    @TableField("update_by")
     private String updateBy;
 
-    @Column(name = "update_time")
+    @TableField("update_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 

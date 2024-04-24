@@ -1,12 +1,12 @@
 package org.example.djxt.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.example.djxt.common.BusinessException;
 import org.example.djxt.common.PageResult;
 import org.example.djxt.domain.SysMessage;
 import org.example.djxt.mapper.SysMessageMapper;
 import org.example.djxt.service.SysMessageService;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,27 +22,26 @@ public class SysMessageServiceImpl implements SysMessageService {
 
     @Override
     public PageResult<SysMessage> list(String keyword, Integer receiveUserId, String messageFlag, int page, int size) {
-        Example example = new Example(SysMessage.class);
-        Example.Criteria criteria = example.createCriteria();
+        QueryWrapper<SysMessage> query = new QueryWrapper<>();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            criteria.andLike("messageTitle", "%" + keyword.trim() + "%");
+            query.like("message_title", keyword.trim());
         }
         if (receiveUserId != null) {
-            criteria.andEqualTo("receiveUserId", receiveUserId);
+            query.eq("receive_user_id", receiveUserId);
         }
         if (messageFlag != null && !messageFlag.trim().isEmpty()) {
-            criteria.andEqualTo("messageFlag", messageFlag);
+            query.eq("message_flag", messageFlag);
         }
 
-        example.orderBy("messageId").desc();
-        List<SysMessage> list = messageMapper.selectByExample(example);
+        query.orderByDesc("message_id");
+        List<SysMessage> list = messageMapper.selectList(query);
         return PageResult.fromList(list, page, size);
     }
 
     @Override
     public SysMessage getById(Integer id) {
-        SysMessage message = messageMapper.selectByPrimaryKey(id);
+        SysMessage message = messageMapper.selectById(id);
         if (message == null) {
             throw new BusinessException("通知不存在: " + id);
         }
@@ -66,7 +65,7 @@ public class SysMessageServiceImpl implements SysMessageService {
 
         message.setCreateTime(LocalDateTime.now());
         message.setUpdateTime(LocalDateTime.now());
-        messageMapper.insertSelective(message);
+        messageMapper.insert(message);
         return message;
     }
 
@@ -75,14 +74,14 @@ public class SysMessageServiceImpl implements SysMessageService {
         getById(id);
         message.setMessageId(id);
         message.setUpdateTime(LocalDateTime.now());
-        messageMapper.updateByPrimaryKeySelective(message);
+        messageMapper.updateById(message);
         return getById(id);
     }
 
     @Override
     public void delete(Integer id) {
         getById(id);
-        messageMapper.deleteByPrimaryKey(id);
+        messageMapper.deleteById(id);
     }
 
     private boolean isBlank(String value) {

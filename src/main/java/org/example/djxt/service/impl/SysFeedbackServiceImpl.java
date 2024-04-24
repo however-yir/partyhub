@@ -1,12 +1,12 @@
 package org.example.djxt.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.example.djxt.common.BusinessException;
 import org.example.djxt.common.PageResult;
 import org.example.djxt.domain.SysFeedback;
 import org.example.djxt.mapper.SysFeedbackMapper;
 import org.example.djxt.service.SysFeedbackService;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,20 +22,19 @@ public class SysFeedbackServiceImpl implements SysFeedbackService {
 
     @Override
     public PageResult<SysFeedback> list(Integer messageId, int page, int size) {
-        Example example = new Example(SysFeedback.class);
-        Example.Criteria criteria = example.createCriteria();
+        QueryWrapper<SysFeedback> query = new QueryWrapper<>();
         if (messageId != null) {
-            criteria.andEqualTo("messageid", messageId);
+            query.eq("messageid", messageId);
         }
-        example.orderBy("id").desc();
+        query.orderByDesc("id");
 
-        List<SysFeedback> list = feedbackMapper.selectByExample(example);
+        List<SysFeedback> list = feedbackMapper.selectList(query);
         return PageResult.fromList(list, page, size);
     }
 
     @Override
     public SysFeedback getById(Integer id) {
-        SysFeedback feedback = feedbackMapper.selectByPrimaryKey(id);
+        SysFeedback feedback = feedbackMapper.selectById(id);
         if (feedback == null) {
             throw new BusinessException("反馈不存在: " + id);
         }
@@ -50,7 +49,7 @@ public class SysFeedbackServiceImpl implements SysFeedbackService {
 
         feedback.setCreateTime(LocalDateTime.now());
         feedback.setUpdateTime(LocalDateTime.now());
-        feedbackMapper.insertSelective(feedback);
+        feedbackMapper.insert(feedback);
         return feedback;
     }
 
@@ -59,14 +58,14 @@ public class SysFeedbackServiceImpl implements SysFeedbackService {
         getById(id);
         feedback.setId(id);
         feedback.setUpdateTime(LocalDateTime.now());
-        feedbackMapper.updateByPrimaryKeySelective(feedback);
+        feedbackMapper.updateById(feedback);
         return getById(id);
     }
 
     @Override
     public void delete(Integer id) {
         getById(id);
-        feedbackMapper.deleteByPrimaryKey(id);
+        feedbackMapper.deleteById(id);
     }
 
     private boolean isBlank(String value) {
