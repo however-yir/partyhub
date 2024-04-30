@@ -1,114 +1,100 @@
-# partyhub
+# partyhub 党建管理系统
 
-`partyhub` 是一个党建管理系统后端项目，基于 Spring Boot + MyBatis + MySQL，当前形态为：
+> 基于 Spring Boot 的党支部评星定级与党建事务管理后端服务
 
-- 可运行后端服务（统一响应、异常处理、分页）
-- 多业务模块 API（支部、用户、通知、反馈、岗位、评星）
-- 静态前端资源托管（`src/main/resources/static`）
-- 完整业务数据库脚本（`djxt.sql`）
+[![CI](https://github.com/however-yir/partyhub/actions/workflows/ci.yml/badge.svg)](https://github.com/however-yir/partyhub/actions/workflows/ci.yml)
+[![Java Version](https://img.shields.io/badge/Java-17-blue)](https://adoptium.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-green)](https://spring.io/projects/spring-boot)
 
-## 技术栈
+## 🎯 项目定位
 
-- Java 8
-- Spring Boot 2.4.2
-- MyBatis + tk-mapper
+`partyhub` 聚焦党支部评星定级管理场景，解决线下填报效率低、评分口径不统一、年度统计分析滞后的问题。  
+系统支持支部信息管理、党员与岗位管理、评星流程流转、通知反馈与统计分析，服务于学院/组织层级的党建数据治理。
+
+## ⚡ 核心能力
+
+| 模块 | 功能说明 | 技术亮点 |
+|------|----------|----------|
+| 支部管理 | 党支部信息维护、分页检索、状态管理 | RESTful CRUD + 统一响应模型 |
+| 用户管理 | 党员账号、组织归属、岗位信息维护 | Spring Security + JWT 鉴权 |
+| 评星定级 | 评星填报、提交流程、审核与自动评级 | 评分模型（基础分+加分-减分+评议项） |
+| 统计分析 | 年度总览、星级分布、流程分布、学院排行、趋势 | Redis 缓存热点统计接口 |
+| 通知反馈 | 消息发布与反馈信息管理 | 分层架构 + 全局异常治理 |
+
+## 🏗️ 技术架构
+
+- Spring Boot 3.2
+- Spring Security + JWT
+- MyBatis-Plus 3.5
+- Flyway
 - MySQL 8.x
+- Redis
 
-## 项目结构
+## 🚀 快速开始
 
-```text
-partyhub
-├── src/main/java/org/example/djxt
-│   ├── common                 # 统一响应、分页、异常
-│   ├── controller             # 新增业务控制器
-│   ├── demos/web              # 兼容旧接口与示例控制器
-│   ├── domain                 # 业务实体
-│   ├── mapper                 # MyBatis Mapper
-│   └── service                # 服务层
-├── src/main/resources/static  # 静态页面与资源
-├── docs/api-coverage.md       # API 覆盖清单
-├── evaluation/                # 差距分析与评估记录
-├── scripts/evaluation/        # 冒烟测试脚本
-├── project-management/        # 迭代活动记录
-└── djxt.sql                   # 数据库初始化脚本
+### 环境要求
+
+- JDK 17+
+- Maven 3.9+
+- MySQL 8.x
+- Redis 7.x（用于统计缓存）
+
+### 启动步骤
+
+```bash
+# 1) 准备环境变量
+cp .env.example .env
+set -a && source .env && set +a
+
+# 2) 启动依赖（可选：本地已有 MySQL / Redis 可跳过）
+docker compose -f docker-compose.dev.yml up -d
+
+# 3) 初始化数据库（两种方式任选其一）
+# 方式A：导入历史数据脚本
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS djxt DEFAULT CHARSET utf8mb4;"
+mysql -u root -p djxt < djxt.sql
+
+# 方式B：空库交给 Flyway 自动建表（推荐工程化流程）
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS djxt DEFAULT CHARSET utf8mb4;"
+
+# 4) 启动服务
+mvn spring-boot:run
 ```
 
-## 已覆盖 API
+默认地址：`http://localhost:8080`
 
-详情见：[docs/api-coverage.md](docs/api-coverage.md)
+## 🔐 认证接口
 
-核心接口前缀：
+- `POST /api/auth/login`：用户名密码登录，返回 JWT
+- `GET /api/auth/me`：获取当前登录用户信息
 
-- `/api/branches`
-- `/api/users`
-- `/api/messages`
-- `/api/feedbacks`
-- `/api/posts`
-- `/api/stars`
-- `/api/stars/stats/*`（评星定级统计分析）
+## 📐 核心 API
 
-兼容旧接口：
+| 模块 | 接口前缀 | 说明 |
+|------|----------|------|
+| 支部 | `/api/branches` | 支部 CRUD 与分页 |
+| 用户 | `/api/users` | 党员信息管理 |
+| 评星 | `/api/stars` | 评星定级流程与记录 |
+| 统计 | `/api/stars/stats/*` | 年度分析、分布与排名 |
+| 通知 | `/api/messages` | 消息管理 |
+| 反馈 | `/api/feedbacks` | 意见反馈 |
+| 岗位 | `/api/posts` | 岗位信息管理 |
+
+兼容历史接口：
 
 - `GET /star`
 - `GET /star/{id}`
 
-评星定级重点能力：
-
-- 党支部评星数据填报与草稿更新
-- 填报提交流程（支部自评 -> 专家评分）
-- 审核打分与总分自动汇总（基础分 + 加分 - 减分 + 评议项）
-- 自动星级判定（五星/四星/三星/二星/一星）
-- 统计分析（年度总览、星级分布、流程分布、学院排行、多年趋势）
-
-## 本地运行
-
-### 1. 准备环境
-
-- JDK 8
-- Maven 3.6+
-- MySQL 8.x
-
-### 2. 配置环境变量
+## 🧪 测试
 
 ```bash
-cp .env.example .env
-set -a && source .env && set +a
-```
+# 单元测试
+mvn test
 
-### 3. 初始化数据库
-
-```bash
-mysql -u root -p -e "create database if not exists djxt default charset utf8mb4"
-mysql -u root -p djxt < djxt.sql
-```
-
-### 4. 启动服务
-
-```bash
-mvn spring-boot:run
-```
-
-默认访问：`http://localhost:8080`
-
-### 5. 冒烟检查
-
-```bash
+# 冒烟测试
 bash scripts/evaluation/api_smoke_check.sh http://localhost:8080
 ```
 
-## 测试
+## 📄 License
 
-```bash
-mvn test
-```
-
-当前已包含基于 `MockMvc` 的控制器测试样例，可直接在无真实数据库环境下执行。
-
-## 迭代记录
-
-- 后端完善差距分析：`evaluation/backend-gap-analysis.md`
-- 活动日志：`project-management/2025H1_ACTIVITY_LOG.md`
-
-## License
-
-MIT
+MIT License
