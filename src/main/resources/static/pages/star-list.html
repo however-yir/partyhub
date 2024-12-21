@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Element UI Example</title>
+    <!-- 引入 Vue.js -->
+    <script src="../vue.js"></script>
+    <!-- 引入 Element UI CSS -->
+    <link rel="stylesheet" href="../element.css">
+    <!-- 引入 Element UI JS -->
+    <script src="../element.js"></script>
+    <!-- 引入 axios -->
+    <script src="../axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+
+    <el-table
+            :data="tableData"
+            border
+            style="width: 100%">
+        <el-table-column
+                prop="id"
+                label="ID"
+                width="150">
+        </el-table-column>
+        <el-table-column
+                prop="partybranchname"
+                label="党支部名称"
+                width="220">
+        </el-table-column>
+        <el-table-column
+                prop="establishtime"
+                label="成立时间"
+                width="220">
+        </el-table-column>
+        <el-table-column
+                prop="partynumber"
+                label="党员数量"
+                width="120">
+        </el-table-column>
+        <el-table-column
+                prop="deptName"
+                label="所属学院"
+                width="250">
+        </el-table-column>
+        <el-table-column
+                prop="processName"
+                label="流程节点"
+                width="220">
+        </el-table-column>
+        <el-table-column
+                prop="createTime"
+                label="申报年份"
+                width="220">
+        </el-table-column>
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="220">
+            <template slot-scope="scope">
+                <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+
+</div>
+
+<script>
+    new Vue({
+        mounted() {
+            this.fetchData();
+        },
+        el: '#app',
+        data() {
+            return {
+                tableData: []
+            }
+        },
+        methods: {
+            handleClick(row) {
+                console.log(row.id);
+                window.location.href = "detail.html?id=" + row.id;
+            },
+            fetchData() {
+                axios.get('/star').then((response) => {
+                    this.tableData = response.data;
+                    console.log(this.tableData);
+                }).catch((error) => {
+                    console.error(error);
+                });
+            }
+        }
+    });
+</script>
+</body>
