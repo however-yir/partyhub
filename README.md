@@ -11,7 +11,7 @@
 `partyhub` 当前仓库是“后端 API + 静态资源 + 数据模型”混合形态：
 
 - 后端：Spring Boot（可运行）
-- 前端：`src/main/resources/static` 内置静态页面与资源
+- 前端：`src/main/resources/static` 内置静态页面与资源（非独立前端工程）
 - 数据库：`djxt.sql` 提供较完整的业务表结构与样例数据
 
 ## 2. 当前代码已实现内容
@@ -58,23 +58,41 @@ partyhub
 
 ### 5.2 初始化数据库
 
-1. 创建数据库：`djxt`
-2. 导入 [djxt.sql](djxt.sql)
-3. 修改 [application.yml](src/main/resources/application.yml) 的数据库账号密码
+1. 复制环境模板并设置本地口令（不要保留 `change_me_*` 占位值）：
+
+```bash
+cp .env.example .env
+```
+
+2. 启动本地 MySQL（可选，但推荐）：
+
+```bash
+docker compose --env-file .env -f docker-compose.dev.yml up -d
+```
+
+3. 创建数据库并导入 [djxt.sql](djxt.sql)
 
 ### 5.3 启动后端
 
 ```bash
+set -a && source .env && set +a
 mvn spring-boot:run
 ```
 
 默认地址：`http://localhost:8080`
+
+### 5.4 前端边界说明
+
+- 本仓库前端资源已内置在 `src/main/resources/static`，启动后端即可直接访问页面资源。
+- 当前不提供独立前端构建链路（`npm` 仅用于依赖清单管理，不是运行前置）。
 
 ## 6. 示例数据
 
 `djxt.sql` 中包含示例管理员数据（`sys_user`）：
 
 - `admin / 123456`
+
+仅用于本地演示，导入后请立即修改示例账号口令。
 
 ## 7. 当前注意事项
 
