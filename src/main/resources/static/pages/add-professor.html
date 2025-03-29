@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Edumin - Bootstrap Admin Dashboard </title>
+    <!-- Favicon icon -->
+    
+    <link rel="stylesheet" href="../css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+	<link rel="stylesheet" href="../css/skin-2.css">
+	
+	<!-- Pick date -->
+    <link rel="stylesheet" href="../css/default.css">
+    <link rel="stylesheet" href="../css/default.date.css">
+	
+</head>
+
+<body>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+    <div id="preloader">
+        <div class="sk-three-bounce">
+            <div class="sk-child sk-bounce1"></div>
+            <div class="sk-child sk-bounce2"></div>
+            <div class="sk-child sk-bounce3"></div>
+        </div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+            <!-- row -->
+            <div class="container-fluid">
+				    
+                <div class="row page-titles mx-0">
+                    <div class="col-sm-6 p-md-0">
+                        <div class="welcome-text">
+                            <h4>Add Professor</h4>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+                            <li class="breadcrumb-item active"><a href="">Professors</a></li>
+                            <li class="breadcrumb-item active"><a href="javascript:void(0)">Add Professor</a></li>
+                        </ol>
+                    </div>
+                </div>
+				
+				<div class="row">
+					<div class="col-xl-12 col-xxl-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-header">
+								<h5 class="card-title">Basic Info</h5>
+							</div>
+							<div class="card-body">
+                                <form action="#" method="post">
+									<div class="row">
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">First Name</label>
+												<input type="text" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Last Name</label>
+												<input type="text" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Email Here</label>
+												<input type="text" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Joining Date</label>
+												<input name="datepicker" class="datepicker-default form-control" id="datepicker">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Password</label>
+												<input type="password" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Confirm Password</label>
+												<input type="password" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Mobile Number</label>
+												<input type="text" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Gender</label>
+												<select class="form-control">
+													<option value="Gender">Gender</option>
+													<option value="Male">Male</option>
+													<option value="Female">Female</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Designation</label>
+												<input type="text" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Department</label>
+												<select class="form-control">
+													<option value="Department">Department</option>
+													<option value="html">HTML</option>
+													<option value="css">CSS</option>
+													<option value="javascript">JavaScript</option>
+													<option value="angular">Angular</option>
+													<option value="angular">React</option>
+													<option value="vuejs">Vue.js</option>
+													<option value="ruby">Ruby</option>
+													<option value="php">PHP</option>
+													<option value="asp">ASP.NET</option>
+													<option value="python">Python</option>
+													<option value="mysql">MySQL</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Date of Birth</label>
+												<input name="datepicker" class="datepicker-default form-control" id="datepicker1">
+											</div>
+										</div>
+										<div class="col-lg-6 col-md-6 col-sm-12">
+											<div class="form-group">
+												<label class="form-label">Education</label>
+												<input type="text" class="form-control">
+											</div>
+										</div>
+										<div class="col-lg-12 col-md-12 col-sm-12">
+											<div class="form-group fallback w-100">
+												<input type="file" class="dropify" data-default-file="">
+											</div>
+										</div>
+										<div class="col-lg-12 col-md-12 col-sm-12">
+											<button type="submit" class="btn btn-primary">Submit</button>
+											<button type="submit" class="btn btn-light">Cencel</button>
+										</div>
+									</div>
+								</form>
+                            </div>
+                        </div>
+                    </div>
+				</div>
+            </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+
+
+
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+<script src="../js/global.min.js"></script>
+	<script src="../js/bootstrap-select.min.js"></script>
+    <script src="../js/custom.min.js"></script>
+	<script src="../js/dlabnav-init.js"></script>
+
+	<!-- Svganimation scripts -->
+    <script src="../js/vivus.min.js"></script>
+    <script src="../js/svg.animation.js"></script>
+	
+	<!-- pickdate -->
+    <script src="../js/picker.js"></script>
+    <script src="../js/picker.time.js"></script>
+    <script src="../js/picker.date.js"></script>
+	
+	<!-- Pickdate -->
+    <script src="../js/pickadate-init.js"></script>
+
+</body>
+</html>
