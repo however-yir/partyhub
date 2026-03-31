@@ -1,5 +1,9 @@
 # partyhub
 
+🔥 A Spring Boot party-building management project based on MyBatis, MySQL, and integrated static frontend assets.  
+🚀 Built for branch star-rating data, backend APIs, and structured business database resources.  
+⭐ Provides a practical foundation for organization management, data modeling, and template-based admin pages.
+
 > 党建评星主题的数据与应用示例仓库，包含 Spring Boot 后端接口、静态前端资源以及完整业务数据库脚本（`djxt.sql`）。
 
 ## 1. 项目定位
