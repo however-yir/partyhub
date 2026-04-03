@@ -1,0 +1,2 @@
+-- partyhub bootstrap SQL placeholder.
+-- TODO: import djxt schema and baseline branch-star data.
