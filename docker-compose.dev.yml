@@ -1,13 +1,12 @@
-version: "3.9"
 services:
   mysql:
     image: mysql:8.0
     container_name: partyhub-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-change_me_root_password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-123456}
       MYSQL_DATABASE: djxt
     ports:
-      - "3309:3306"
+      - "3306:3306"
     volumes:
       - partyhub_mysql_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro

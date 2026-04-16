@@ -38,11 +38,18 @@ public class SecurityConfig {
                                 "/error",
                                 "/",
                                 "/index.html",
+                                "/pages/**",
                                 "/css/**",
                                 "/js/**",
                                 "/image/**",
                                 "/picture/**",
-                                "/newpic/**"
+                                "/newpic/**",
+                                "/font/**",
+                                "/favicon.ico",
+                                "/axios.min.js",
+                                "/vue.js",
+                                "/element.js",
+                                "/element.css"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

@@ -44,24 +44,20 @@
 ```bash
 # 1) 准备环境变量
 cp .env.example .env
-set -a && source .env && set +a
 
-# 2) 启动依赖（可选：本地已有 MySQL / Redis 可跳过）
+# 2) 如需使用 Docker 一键环境（可选）
 docker compose -f docker-compose.dev.yml up -d
 
-# 3) 初始化数据库（两种方式任选其一）
-# 方式A：导入历史数据脚本
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS djxt DEFAULT CHARSET utf8mb4;"
-mysql -u root -p djxt < djxt.sql
-
-# 方式B：空库交给 Flyway 自动建表（推荐工程化流程）
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS djxt DEFAULT CHARSET utf8mb4;"
-
-# 4) 启动服务
+# 3) 启动服务（会自动读取项目根目录 .env）
 mvn spring-boot:run
 ```
 
 默认地址：`http://localhost:8080`
+
+默认演示账号（Flyway 自动种子）：
+
+- 用户名：`admin`
+- 密码：`123456`
 
 ## 🔐 认证接口
 
@@ -85,11 +81,38 @@ mvn spring-boot:run
 - `GET /star`
 - `GET /star/{id}`
 
+## 📊 Redis 统计缓存实现
+
+> 默认使用 `CACHE_TYPE=simple`，即本地内存缓存，方便本地零依赖启动。  
+> 如需切换 Redis，请在 `.env` 中设置 `CACHE_TYPE=redis` 并配置 `REDIS_*` 参数。
+
+评星统计相关接口已在 `SysBranchStarServiceImp` 中启用基于 Spring Cache 的 Redis 缓存，避免高频统计查询反复压测数据库。
+
+- 缓存注解：`@Cacheable` + `@CacheEvict` + `@Caching`
+- 缓存范围：`/api/stars/stats/*` 对应服务方法
+- 缓存名称：
+  - `starStatsOverview`
+  - `starStatsByRating`
+  - `starStatsByProcess`
+  - `starDeptRanking`
+  - `starTrend`
+- Key 策略：
+  - 年份维度：`year`（为空时使用 `ALL`）
+  - 排名接口：`year + ':' + limit`
+- 失效策略：
+  - 在 `create/update/submit/review/delete` 写操作后统一 `allEntries = true` 清理统计缓存
+  - 保证统计数据与业务状态一致
+- TTL：
+  - `spring.cache.redis.time-to-live=${CACHE_TTL_MS:300000}`（默认 5 分钟，可通过环境变量调整）
+
 ## 🧪 测试
 
 ```bash
 # 单元测试
 mvn test
+
+# 覆盖率校验（service.impl 行覆盖率 >= 60%）
+mvn verify
 
 # 冒烟测试
 bash scripts/evaluation/api_smoke_check.sh http://localhost:8080
